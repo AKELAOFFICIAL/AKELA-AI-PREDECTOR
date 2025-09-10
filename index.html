@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKELA AI - Advanced Lottery Prediction System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+</head>
+<body>
+    <div class="main-interface" id="main-content">
+        <header>
+            <h1><i class="fas fa-robot"></i> AKELA AI</h1>
+            <div class="subtitle">Advanced Lottery Prediction & Analysis System</div>
+        </header>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </div>
+                <div class="tab" data-tab="predictions">
+                    <i class="fas fa-chart-line"></i> Predictions
+                </div>
+                <div class="tab" data-tab="analysis">
+                    <i class="fas fa-database"></i> Fetched Data
+                </div>
+                <div class="tab" data-tab="auto-session">
+                    <i class="fas fa-bolt"></i> Auto Session
+                </div>
+                <div class="tab" data-tab="auto-timing">
+                    <i class="fas fa-clock"></i> Auto Timing
+                </div>
+                <div class="tab" data-tab="scheduled-messages">
+                    <i class="fas fa-calendar-alt"></i> Scheduled Messages
+                </div>
+                <div class="tab" data-tab="manual-prediction">
+                    <i class="fas fa-hand-pointer"></i> Manual Prediction
+                </div>
+                <div class="tab" data-tab="game">
+                    <i class="fas fa-gamepad"></i> Game
+                </div>
+                <div class="tab" data-tab="settings">
+                    <i class="fas fa-info-circle"></i> Data Summary
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="dashboard">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-bullseye"></i> Current Prediction
+                    </h2>
+                    <div class="prediction-grid">
+                        <div class="prediction-item">
+                            <div class="prediction-label">Next Draw Period</div>
+                            <div class="prediction-value" id="next-period">--</div>
+                            <div class="confidence">
+                                <i class="fas fa-clock"></i> Upcoming
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-label">Number Prediction</div>
+                            <div class="prediction-value" id="number-pred">--</div>
+                            <div class="confidence" id="number-confidence">
+                                <i class="fas fa-info-circle"></i> Loading...
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-label">Size Prediction</div>
+                            <div class="prediction-value" id="size-pred">--</div>
+                            <div class="confidence" id="size-confidence">
+                                <i class="fas fa-info-circle"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar" style="width: 0%">Updating in 60s</div>
+                    </div>
+                    
+                    <div class="last-updated">
+                        <i class="fas fa-sync-alt"></i>
+                        <span id="last-updated">Last updated: --</span>
+                        <button id="refresh-btn" class="refresh-btn">
+                            <i class="fas fa-redo-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Number Prediction Accuracy</div>
+                        <div class="stat-value" id="num-accuracy">--%</div>
+                        <div id="num-streak">Current streak: --</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Size Prediction Accuracy</div>
+                        <div class="stat-value" id="size-accuracy">--%</div>
+                        <div id="size-streak">Current streak: --</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Predictions</div>
+                        <div class="stat-value" id="total-predictions">--</div>
+                        <div id="win-rate">Win rate: --%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Average Error</div>
+                        <div class="stat-value" id="avg-error">--</div>
+                        <div id="error-trend">Trend: --</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="predictions">
+                <div class="card">
+                    <div class="card-header-with-button">
+                        <h2 class="card-title">
+                            <i class="fas fa-database"></i> Prediction History
+                        </h2>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" id="clear-predictions-btn">
+                                <i class="fas fa-trash"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="prediction-history">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th>Number Pred</th>
+                                    <th>Size Pred</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="analysis">
+                <div class="card">
+                    <div class="card-header-with-button">
+                        <h2 class="card-title">
+                            <i class="fas fa-table"></i> Fetched Data
+                        </h2>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" id="clear-fetched-btn">
+                                <i class="fas fa-trash"></i> Clear Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="fetched-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Period</th>
+                                    <th>Number</th>
+                                    <th>Size</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="auto-session">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fab fa-telegram"></i> Auto Prediction Session
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <div class="form-group">
+                            <label class="form-label">Bot Token</label>
+                            <input type="text" class="form-control" id="bot-token" placeholder="Enter your bot token">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Channel ID</label>
+                            <input type="text" class="form-control" id="channel-id" placeholder="Enter your channel ID">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Automatic Session End (after X wins)</label>
+                            <input type="number" class="form-control" id="session-end-count" value="10" min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Prediction Message Template</label>
+                            <textarea class="form-control" id="message-template" rows="3">PERIOD ➪ {issueNumber}\nRESULT ➪ {size} / {number}</textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" id="save-telegram-settings" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="button" id="session-toggle" class="btn btn-secondary">
+                                <i class="fas fa-play"></i> Start Auto Session
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="auto-timing">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-clock"></i> Auto Timing Sessions
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <p class="info-note">Set specific times for automatic prediction sessions to start.</p>
+                        <div class="time-slots-container">
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 1</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-1" value="09:00">
+                            </div>
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 2</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-2" value="12:00">
+                            </div>
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 3</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-3" value="15:00">
+                            </div>
+                            <div class="time-slot-item">
+                                <label class="form-label">Session 4</label>
+                                <input type="time" class="form-control timing-time-input" id="timing-time-4" value="18:00">
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="button" id="toggle-timing-sessions" class="btn btn-primary">
+                                <i class="fas fa-clock"></i> Start Timing Sessions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="scheduled-messages">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-calendar-alt"></i> Scheduled Messages
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <p class="info-note">Schedule messages to be sent to your Telegram channel at specific times.</p>
+                        <div class="time-slots">
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-1" value="17:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-1" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-2" value="20:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-2" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-3" value="23:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-3" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="time" class="form-control scheduled-time" id="scheduled-time-4" value="00:00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Message</label>
+                                    <textarea class="form-control scheduled-message" id="scheduled-message-4" placeholder="Message for this time"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <button type="button" id="toggle-scheduled-btn" class="btn btn-primary">
+                                <i class="fas fa-clock"></i> Start Scheduled Messages
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="manual-prediction">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fab fa-telegram"></i> Manual Prediction
+                    </h2>
+                    <div class="telegram-settings-box">
+                        <div class="manual-session-controls">
+                            <button type="button" id="manual-session-start" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Session Start
+                            </button>
+                            <button type="button" id="manual-session-end" class="btn btn-danger" style="display: none;">
+                                <i class="fas fa-stop"></i> Session End
+                            </button>
+                        </div>
+                        <div class="session-info" id="manual-session-info" style="display: none;">
+                            <div class="progress-container">
+                                <div class="progress-bar" id="manual-progress-bar" style="width: 0%">Updating in 60s</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Current Period Number</label>
+                                <input type="text" class="form-control" id="manual-period" placeholder="Loading..." readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Size Prediction</label>
+                                <select class="form-control" id="manual-size-pred">
+                                    <option value="">-Select Size-</option>
+                                    <option value="BIG">BIG</option>
+                                    <option value="SMALL">SMALL</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Number Prediction (0-9)</label>
+                                <input type="number" class="form-control" id="manual-number-pred" min="0" max="9" placeholder="Enter a number (0-9)">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="submit-manual-prediction" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Submit Prediction
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="settings">
+                <div class="card">
+                    <h2 class="card-title">
+                        <i class="fas fa-info-circle"></i> Data Summary
+                    </h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Records</div>
+                            <div class="stat-value" id="total-records">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Last Update</div>
+                            <div class="stat-value" id="last-update-time">--</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Prediction Accuracy</div>
+                            <div class="stat-value" id="summary-accuracy">--%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Current Streak</div>
+                            <div class="stat-value" id="current-streak">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="game">
+                <iframe id="game-iframe" src="https://www.6club.win/#/register?invitationCode=438172851706" style="width:100%; height:95vh; border:none;"></iframe>
+            </div>
+        </div>
+        
+        <footer>
+            <p>AKELA AI Lottery Prediction System &copy; 2023</p>
+        </footer>
+    </div>
+    
+    <div class="splash-screen" id="splash-screen">
+        <div class="splash-content">
+            <h1><i class="fas fa-robot"></i> AKELA AI</h1>
+            <p>Advanced Lottery Prediction & Analysis System</p>
+            <button id="start-button" class="btn btn-primary">Start</button>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">Notification message</span>
+    </div>
+
+    <div class="session-stats-popup" id="session-stats-popup">
+        <div class="popup-header">
+            <h4><i class="fas fa-chart-bar"></i> Session Stats</h4>
+        </div>
+        <div class="popup-content">
+            <div class="stat-item">
+                <span>Total Predictions:</span>
+                <span id="popup-total">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="win-text">Total Wins:</span>
+                <span class="win-text" id="popup-wins">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="loss-text">Total Losses:</span>
+                <span class="loss-text" id="popup-losses">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="help-center-btn" id="help-btn" title="Help Center">
+        <i class="fab fa-telegram"></i>
+    </div>
+
+    <script src="datafetching.js"></script>
+    <script src="aiprediction.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
